@@ -2,7 +2,6 @@
 
 # ========== Configuration ==========
 CITY="Innopolis"
-API_KEY=
 TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
 OUTPUT_DIR="$HOME/Documents/weather_reports"
 UNITS="metric"
@@ -10,6 +9,16 @@ UNITS="metric"
 mkdir -p "$OUTPUT_DIR"
 
 OUTPUT_FILE="$OUTPUT_DIR/weather_report_${CITY}_${TIMESTAMP}.txt"
+
+# ========== Load environment variables ==========
+if [ -f .env ]; then
+  export $(grep -v '^#' .env | xargs)  # Load API_KEY from .env file
+fi
+
+if [ -z "$API_KEY" ]; then
+  echo "API key is missing! Please check your .env file."
+  exit 1
+fi
 
 # ========== API Call ==========
 WEATHER_JSON=$(curl -s "https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=${UNITS}")
